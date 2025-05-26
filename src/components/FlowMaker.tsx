@@ -148,12 +148,46 @@ const initialEdges = [
     }
 ];
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    initialNodes,
-    initialEdges
-)
+type NodeType = {
+    id: string;
+    type: string;
+    position: {
+        x: number;
+        y: number;
+    };
+    data: {
+        label: string;
+        subType: string;
+    };
+};
 
-export default function FlowMaker() {
+type EdgeType = {
+    id: string;
+    source: string;
+    target: string;
+    label: string;
+    animated: boolean;
+    type: string;
+};
+
+type FlowDiagramType = {
+    nodes: NodeType[];
+    edges: EdgeType[];
+};
+
+
+// const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+//     initialNodes,
+//     initialEdges
+// )
+
+export default function FlowMaker({ flowDiagram }: { flowDiagram: FlowDiagramType }) {
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        flowDiagram.nodes,
+        flowDiagram.edges
+        // initialNodes,
+        // initialEdges
+    )
     const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes)
     const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges)
 

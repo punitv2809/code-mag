@@ -12,8 +12,20 @@ import FlowMaker from "./FlowMaker";
 
 type FunctionContent = {
   functionName: string,
-  content: string
+  content: string,
+  parameters?: { name: string, type?: string, description?: string }[],
+  returnType?: string,
+  summary: string,
+  calls: string[],
+  isMethod?: boolean,
+  className?: string,
+  controlFlow?: {
+    type: "if" | "loop" | "switch" | "try" | "other",
+    condition?: string,
+    description?: string
+  }
 }
+
 type SetupWithSourceCode = {
   path: string,
   sourceCode: FunctionContent[]
@@ -92,6 +104,8 @@ const SourceSetup = ({ folderPath }: { folderPath: string }) => {
   const [files, setFiles] = useState<string[]>([]);
   const [setup, setSetup] = useState<Record<string, string[]>>({});
   const [tmpMove, setTmpMove] = useState<boolean>(false)
+  const [diagram, setDiagram] = useState<{}>({})
+
 
   const [isNextLoading, setIsNextLoading] = useState<boolean>(false)
 
@@ -139,20 +153,23 @@ const SourceSetup = ({ folderPath }: { folderPath: string }) => {
     const setupContent: SetupWithSourceCode = []
 
     for (const file in setup) {
-      const contents: FunctionContent[] = []
       const functions = setup[file]
-      functions.map(async (fn) => {
-        const functionBody = await window.ipcRenderer.invoke("source-code", 'fetch-function-body', file, fn)
-        contents.push({ functionName: fn, content: functionBody })
-      })
+      const contents = await Promise.all(
+        functions.map(async (fn) => {
+          const functionBody = await window.ipcRenderer.invoke("source-code", 'fetch-function-body', file, fn);
+          const metadata: { [key: string]: string } = await window.ipcRenderer.invoke("llm-gen", 'post-process-function', functionBody)
+          return { functionName: fn, content: functionBody, ...metadata };
+        })
+      );
       setupContent.push({ path: file, sourceCode: contents })
+      setDiagram(await window.ipcRenderer.invoke("llm-gen", 'generate-flow', JSON.stringify(contents, null, 2)))
     }
     setIsNextLoading(false)
     setTmpMove(true)
   }
 
-  if (tmpMove) {
-    return <FlowMaker />
+  if (tmpMove && diagram) {
+    return <FlowMaker flowDiagram={diagram} />
   }
 
   return (

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import FileSelector from './src/handlers/source-selector'
 import SourceCode from './src/handlers/source-code'
+import LLMGenHandler from './src/handlers/llm-gen'
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -69,6 +70,8 @@ app.on('activate', () => {
 app.whenReady().then(createWindow)
 
 const sourceCodeHandler = new SourceCode();
+const llmGenHandler = new LLMGenHandler();
 
 ipcMain.handle('select-folder', new FileSelector().run)
 ipcMain.handle('source-code', (event, ...args) => sourceCodeHandler.run(event, ...args));
+ipcMain.handle('llm-gen', (event, ...args) => llmGenHandler.run(event, ...args));
