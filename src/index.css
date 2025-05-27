@@ -121,4 +121,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .w-md-editor, .wmde-markdown-color, .w-md-editor-toolbar, .w-md-editor-editor  {
+    @apply bg-background! text-primary!;
+  }
 }
