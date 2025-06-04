@@ -20,6 +20,9 @@ export default class LLMGenHandler implements ElectronHandler {
         if (action === 'generate-flow') {
             return await this.generateFlow(content)
         }
+        if (action === 'generate-blog') {
+            return await this.generateBlog(content)
+        }
         throw new Error(`Action ${action} is not supported by LLMGenHandler`);
     }
 
@@ -112,6 +115,19 @@ export default class LLMGenHandler implements ElectronHandler {
             input: ${content}`);
 
         return response;
+    }
+
+    async generateBlog(content:string): Promise<{ [key: string]: unknown }>{
+        const blogSchema = z.object({
+            title: z.string(),
+            content: z.string()
+        });
+
+        const structuredModel = this.getAiInstance().withStructuredOutput(blogSchema);
+        const response = await structuredModel.invoke(`Generate a high quality long blog, including flow for the code given below.
+            input: ${content}`);
+
+        return response; 
     }
 
     private getAiInstance() {

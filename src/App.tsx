@@ -3,6 +3,7 @@ import { CodeXml } from "lucide-react";
 import { Button } from "./components/ui/button";
 import SourceSetup from "./components/source-setup";
 import { ThemeProvider } from "./components/ui/theme-provider";
+import Layout from "./Layout";
 
 
 const App = () => {
@@ -17,10 +18,11 @@ const App = () => {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-      <div className="bg-background text-foreground h-screen w-screen flex gap-2 flex-col items-center justify-center">
+      <Layout />
+      {/* <div className="bg-background text-foreground h-screen w-screen flex gap-2 flex-col items-center justify-center">
         {folderPath && <SourceSetup folderPath={folderPath} />}
         {!folderPath && <Button onClick={handleSelectFolder}><CodeXml /> Select Source Code</Button>}
-      </div>
+      </div> */}
     </ThemeProvider >
   )
 }

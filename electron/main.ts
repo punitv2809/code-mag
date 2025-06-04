@@ -31,6 +31,9 @@ let win: BrowserWindow | null
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    width: 1200,
+    height: 600,
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
@@ -75,3 +78,20 @@ const llmGenHandler = new LLMGenHandler();
 ipcMain.handle('select-folder', new FileSelector().run)
 ipcMain.handle('source-code', (event, ...args) => sourceCodeHandler.run(event, ...args));
 ipcMain.handle('llm-gen', (event, ...args) => llmGenHandler.run(event, ...args));
+
+// main.ts
+ipcMain.on('window:minimize', () => {
+  win?.minimize();
+});
+
+ipcMain.on('window:maximize', () => {
+  if (win?.isMaximized()) {
+    win.unmaximize();
+  } else {
+    win.maximize();
+  }
+});
+
+ipcMain.on('window:close', () => {
+  win?.close();
+});
