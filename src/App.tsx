@@ -1,7 +1,4 @@
 import { useState } from "react"
-import { CodeXml } from "lucide-react";
-import { Button } from "./components/ui/button";
-import SourceSetup from "./components/source-setup";
 import { ThemeProvider } from "./components/ui/theme-provider";
 import Layout from "./Layout";
 

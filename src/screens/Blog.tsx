@@ -3,10 +3,12 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github-dark.css'
 
-import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-
+import { ChevronRight, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react'
+import { Textarea } from '@/components/ui/textarea'
 const markdown = `
 # PHP Generators
 
@@ -84,6 +86,7 @@ foreach (getUserRoles() as \$role => \$desc) {
 `
 
 const Blog = () => {
+    const [open, setOpen] = useState(false);
     return (
         <div className="h-full w-full flex items-center justify-center flex-row overflow-y-auto px-6 py-4 pt-22">
             <div className="w-full h-full md:w-full lg:w-7/12">
@@ -112,7 +115,7 @@ const Blog = () => {
                         code: ({ node, inline, className, children, ...props }) => {
                             return !inline ? (
                                 <div className="bg-background border my-2 rounded-md">
-                                    <div className="border-b p-2">
+                                    <div className="border-b p-2 flex items-center justify-end">
                                         <Button size={'sm'} className='text-xs' variant={'outline'}>Copy</Button>
                                     </div>
                                     <pre className="overflow-x-auto p-2">
@@ -136,6 +139,61 @@ const Blog = () => {
                     {markdown}
                 </ReactMarkdown>
             </div>
+            {/* Animate button */}
+            <AnimatePresence>
+                {!open && (
+                    <motion.div
+                        className="absolute bottom-4 right-4 z-10"
+                        initial={{ opacity: 1, y: 0 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Button onClick={() => setOpen(true)}>Ask AI</Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Animate drawer */}
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="absolute right-0 top-0 h-full w-full lg:w-5/12 bg-background border-l z-20 flex flex-col"
+                    >
+                        <div className="h-16 px-4 border-b flex justify-between items-center glass">
+                            <h2 className="text-lg font-semibold">Ask AI</h2>
+                            <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+                                <X className="w-5 h-5" />
+                            </Button>
+                        </div>
+
+                        <div className="flex-1 overflow-auto p-0">
+                            <Textarea
+                                className="h-full resize-none rounded-none border-0"
+                                placeholder="Type your question here..."
+                                rows={5}
+                            />
+                        </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 40 }}
+                            transition={{ duration: 0.25, delay: 0.1 }}
+                            className="absolute bottom-0 right-0 m-6 justify-end"
+                        >
+                            <Button type="submit">
+                                <ChevronRight />
+                            </Button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
         </div>
     )
 }
